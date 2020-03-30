@@ -28,7 +28,7 @@ RUN buildDeps=" \
     && apk add --update --virtual .build-deps $buildDeps \
     && curl -SL $OCSERV_URL -o ocserv.tar.xz \
     && curl -SL $OCSERV_URL.sig -o ocserv.tar.xz.sig \
-    &&   gpg --keyserver pgp.mit.edu --recv-key BBEC9BEF6193A6F868C9F88F8D1CEA4AF07C6E1A \
+    && gpg --keyserver pgp.mit.edu --recv-key 96865171 \
     && gpg --verify ocserv.tar.xz.sig \
     && mkdir -p /usr/src/ocserv \
     && tar -xf ocserv.tar.xz -C /usr/src/ocserv --strip-components=1 \
