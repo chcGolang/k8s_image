@@ -26,10 +26,9 @@ RUN buildDeps=" \
     "; \
     set -x \
     && apk add --update --virtual .build-deps $buildDeps \
+    && apk add --upgrade sed \
     && curl -SL $OCSERV_URL -o ocserv.tar.xz \
     && curl -SL $OCSERV_URL.sig -o ocserv.tar.xz.sig \
-    && gpg --keyserver pgp.mit.edu --recv-key 96865171 \
-    && gpg --verify ocserv.tar.xz.sig \
     && mkdir -p /usr/src/ocserv \
     && tar -xf ocserv.tar.xz -C /usr/src/ocserv --strip-components=1 \
     && rm ocserv.tar.xz* \
@@ -40,7 +39,6 @@ RUN buildDeps=" \
     && mkdir -p /etc/ocserv \
     && cp /usr/src/ocserv/doc/sample.config /etc/ocserv/ocserv.conf \
     && cd / \
-    && rm -rf /usr/src/ocserv \
     && runDeps="$( \
         scanelf --needed --nobanner /usr/local/sbin/ocserv \
             | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
@@ -65,7 +63,6 @@ RUN set -xe \
               -e 's@^#compression =.*@compression = true@' \
               -e 's@^#config-per-@config-per-@' \
               -e 's@^#default-@default-@' \
-              -e 's@^#enable-auth = "certificate"$@enable-auth = "certificate"@' \
               -e 's@^default-domain@#&@' \
               -e 's@^dns =.*@dns = 8.8.8.8@' \
               -e 's@^max-clients =.*@max-clients = 0@' \
@@ -74,8 +71,26 @@ RUN set -xe \
               -e 's@^try-mtu-discovery =.*@try-mtu-discovery = true@' \
               /etc/ocserv/ocserv.conf
 
+RUN sed -i -e 's@^auth = \"plain@#&@' /etc/ocserv/ocserv.conf
+RUN sed -i -e 's@^#auth = "certificate"$@auth = "certificate"@' /etc/ocserv/ocserv.conf
+RUN sed -i -e 's@^#crl =.*@crl = /etc/ocserv/certs/crl.pem@' /etc/ocserv/ocserv.conf
+RUN sed -i -e 's/\[vhost:www.example.com]/#[vhost:www.example.com]/g' /etc/ocserv/ocserv.conf
+RUN sed -i -e ':a;/\ncert-user-oid =/!{$bb;N;ba};P;D;:b;s/cert-user-oid =/#cert-user-oid =/' /etc/ocserv/ocserv.conf
+RUN sed -i -e ':a;/\nserver-key =/!{$bb;N;ba};P;D;:b;s/server-key =/#server-key =/' /etc/ocserv/ocserv.conf
+RUN sed -i -e ':a;/\nserver-cert =/!{$bb;N;ba};P;D;:b;s/server-cert =/#server-cert =/' /etc/ocserv/ocserv.conf
+RUN sed -i -e ':a;/\nca-cert =/!{$bb;N;ba};P;D;:b;s/ca-cert =/#ca-cert =/' /etc/ocserv/ocserv.conf
+RUN sed -i -e ':a;/\nauth =/!{$bb;N;ba};P;D;:b;s/auth =/#auth =/' /etc/ocserv/ocserv.conf
+RUN sed -i -e ':a;/\nipv4-network =/!{$bb;N;ba};P;D;:b;s/ipv4-network =/#ipv4-network =/' /etc/ocserv/ocserv.conf
+RUN sed -i -e ':a;/\nipv4-netmask =/!{$bb;N;ba};P;D;:b;s/ipv4-netmask =/#ipv4-netmask =/' /etc/ocserv/ocserv.conf
+RUN sed -i -e 's@^cert-user-oid = 0\.9\.2342\.19200300\.100\.1\.1$@cert-user-oid = 2.5.4.3@' /etc/ocserv/ocserv.conf
+
 COPY init.sh /init.sh
 COPY docker-entrypoint.sh /entrypoint.sh
+COPY setup-anyconnect.sh /etc/ocserv/setup-anyconnect.sh
+
+RUN chmod +x /init.sh
+RUN chmod +x /entrypoint.sh
+RUN chmod +x /etc/ocserv/setup-anyconnect.sh
 
 VOLUME /etc/ocserv
 WORKDIR /etc/ocserv

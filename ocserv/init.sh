@@ -24,12 +24,13 @@ cert_signing_key
 crl_signing_key
 _EOF_
 
+
 cat > server.tmpl <<_EOF_
 cn = "${VPN_DOMAIN}"
 dns_name = "${VPN_DOMAIN}"
 organization = "ocserv"
 serial = 2
-expiration_days = 365
+expiration_days = 3650
 encryption_key
 signing_key
 tls_www_server
@@ -39,7 +40,7 @@ cat > client.tmpl <<_EOF_
 cn = "client@${VPN_DOMAIN}"
 uid = "client"
 unit = "ocserv"
-expiration_days = 365
+expiration_days = 3650
 signing_key
 tls_www_client
 _EOF_
@@ -63,6 +64,15 @@ certtool --generate-certificate \
          --load-ca-privkey ca-key.pem \
          --template server.tmpl \
          --outfile server-cert.pem
+
+# crl
+cat << _EOF_ > crl.tmpl
+crl_next_update = 9999
+_EOF_
+
+certtool --generate-crl --load-ca-privkey ca-key.pem \
+         --load-ca-certificate ca.pem \
+         --template crl.tmpl --outfile crl.pem
 
 # gen client keys
 certtool --generate-privkey \
