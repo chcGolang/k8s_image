@@ -84,11 +84,10 @@ RUN sed -i -e ':a;/\nipv4-network =/!{$bb;N;ba};P;D;:b;s/ipv4-network =/#ipv4-ne
 RUN sed -i -e ':a;/\nipv4-netmask =/!{$bb;N;ba};P;D;:b;s/ipv4-netmask =/#ipv4-netmask =/' /etc/ocserv/ocserv.conf
 RUN sed -i -e 's@^cert-user-oid = 0\.9\.2342\.19200300\.100\.1\.1$@cert-user-oid = 2.5.4.3@' /etc/ocserv/ocserv.conf
 
-RUN ls
 
-COPY init.sh /init.sh
-COPY docker-entrypoint.sh /entrypoint.sh
-COPY setup-anyconnect.sh /etc/ocserv/setup-anyconnect.sh
+COPY ocserv/init.sh /init.sh
+COPY ocserv/docker-entrypoint.sh /entrypoint.sh
+COPY ocserv/setup-anyconnect.sh /etc/ocserv/setup-anyconnect.sh
 
 RUN chmod +x /init.sh
 RUN chmod +x /entrypoint.sh
