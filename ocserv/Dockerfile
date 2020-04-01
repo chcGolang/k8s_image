@@ -84,7 +84,7 @@ RUN sed -i -e ':a;/\nipv4-network =/!{$bb;N;ba};P;D;:b;s/ipv4-network =/#ipv4-ne
 RUN sed -i -e ':a;/\nipv4-netmask =/!{$bb;N;ba};P;D;:b;s/ipv4-netmask =/#ipv4-netmask =/' /etc/ocserv/ocserv.conf
 RUN sed -i -e 's@^cert-user-oid = 0\.9\.2342\.19200300\.100\.1\.1$@cert-user-oid = 2.5.4.3@' /etc/ocserv/ocserv.conf
 RUN sed -i -e 's@^no-route@#&@' /etc/ocserv/ocserv.conf
-RUM sed -i -e "s@^isolate-workers =.*@isolate-workers = false@" /etc/ocserv/ocserv.conf
+RUN sed -i -e "s@^isolate-workers =.*@isolate-workers = false@" /etc/ocserv/ocserv.conf
 
 COPY init.sh /init.sh
 COPY docker-entrypoint.sh /entrypoint.sh
