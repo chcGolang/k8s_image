@@ -1,6 +1,6 @@
 FROM alpine
 
-COPY build.sh /tmp
+COPY glider/build.sh /tmp
 
 RUN /tmp/build.sh
 
