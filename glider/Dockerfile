@@ -2,6 +2,8 @@ FROM alpine
 
 COPY glider/build.sh /tmp
 
+RUN chmod +x /tmp/build.sh
+
 RUN /tmp/build.sh
 
 USER nobody
