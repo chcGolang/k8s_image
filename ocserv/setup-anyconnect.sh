@@ -90,6 +90,7 @@ REVOKED_CERT="${SERVER_PATH}/revoked.pem"
 cat ${CLIENT_CERT} >> ${REVOKED_CERT}
 
 CRL="${SERVER_PATH}/crl.pem"
+CRL_TMPL="${SERVER_PATH}/crl.tmpl"
 
-certtool --generate-crl         --outfile ${CRL}   --template ${CRL_TMPL} --load-certificate ${REVOKED_CERT}     --load-ca-certificate ${CA_CERT} --load-ca-privkey ${CA_KEY} 
+certtool --generate-crl    --outfile ${CRL}   --template ${CRL_TMPL} --load-certificate ${REVOKED_CERT}     --load-ca-certificate ${CA_CERT} --load-ca-privkey ${CA_KEY}
 
