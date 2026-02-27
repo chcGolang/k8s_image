@@ -1,7 +1,5 @@
 FROM golang:latest AS builder
 
-LABEL org.opencontainers.image.source https://github.com/yangchuansheng/docker-image
-
 WORKDIR /app
 
 # https://tailscale.com/kb/1118/custom-derp-servers/
@@ -10,7 +8,7 @@ RUN go install tailscale.com/cmd/derper@main
 FROM ubuntu
 WORKDIR /app
 
-ARG DEBIAN_FRONTEND=noninteractive
+ARG DEBIAN_FRONTEND=chcgolang
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends apt-utils && \
